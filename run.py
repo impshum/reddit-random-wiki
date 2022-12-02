@@ -1,6 +1,7 @@
 import praw
 import configparser
 import random
+import wordninja
 
 
 config = configparser.ConfigParser()
@@ -25,7 +26,10 @@ reddit.validate_on_submit = True
 def get_random_wikipage():
     wikipages = [i.name for i in reddit.subreddit(reddit_target_subreddit).wiki]
     allowed_wikipages = [i for i in wikipages if 'config' not in i]
-    return reddit.subreddit(reddit_target_subreddit).wiki[random.choice(allowed_wikipages)].content_md
+    random_wikipage = random.choice(allowed_wikipages)
+    title = ' '.join(wordninja.split(''.join(random_wikipage.split('/')[-1])))
+    selftext = reddit.subreddit(reddit_target_subreddit).wiki[random_wikipage].content_md
+    return title.title(), selftext
 
 
 def post_to_reddit(title, selftext):
@@ -33,9 +37,9 @@ def post_to_reddit(title, selftext):
 
 
 def main():
-    random_wikipage = get_random_wikipage()
-    print(random_wikipage)
-    post_to_reddit('Random Wiki Post', random_wikipage)
+    title, selftext = get_random_wikipage()
+    print(title, selftext)
+    #post_to_reddit('Random Wiki Post', random_wikipage)
 
 
 if __name__ == '__main__':
